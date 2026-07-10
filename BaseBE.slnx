@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/docs/">
+    <File Path="docs/architecture.md" />
+    <File Path="docs/how-to-use.md" />
+    <File Path="docs/patterns.md" />
+    <File Path="docs/principles.md" />
+    <File Path="docs/recommend.md" />
+  </Folder>
+  <Project Path="BaseBE.API/BaseBE.API.csproj" />
+  <Project Path="BaseBE.Application/BaseBE.Application.csproj" />
+  <Project Path="BaseBE.Domain/BaseBE.Domain.csproj" />
+  <Project Path="BaseBE.Infrastructure/BaseBE.Infrastructure.csproj" />
+</Solution>
