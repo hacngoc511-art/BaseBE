@@ -1,82 +1,83 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using BaseBE.Infrastructure.Data;
-using BaseBE.Domain.Entities;
+﻿using BaseBE.Application.DTOs;
+using BaseBE.Application.Handlers;
+using BaseBE.Application.Queries;
+using Microsoft.AspNetCore.Mvc;
 
-namespace BaseBE.API.Controllers
+namespace BaseBE.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class AuthorsController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class AuthorsController : ControllerBase
+    private readonly AuthorQueryHandler _queryHandler;
+    private readonly AuthorCommandHandler _commandHandler;
+
+    public AuthorsController(
+        AuthorQueryHandler queryHandler,
+        AuthorCommandHandler commandHandler)
     {
-        private readonly ApplicationDbContext _context;
+        _queryHandler = queryHandler;
+        _commandHandler = commandHandler;
+    }
 
-        public AuthorsController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+    // GET: api/authors
+    [HttpGet]
+    public async Task<IActionResult> GetAuthors(CancellationToken cancellationToken)
+    {
+        var result = await _queryHandler.HandleAsync(new GetAuthorsQuery(), cancellationToken);
+        return Ok(result);
+    }
 
-        // GET: api/authors
-        [HttpGet]
-        public async Task<IActionResult> GetAuthors()
-        {
-            var authors = await _context.Authors
-                .Include(x => x.Books)
-                .ToListAsync();
+    // GET: api/authors/5
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetAuthor(int id, CancellationToken cancellationToken)
+    {
+        var result = await _queryHandler.HandleAsync(
+            new GetAuthorByIdQuery { Id = id },
+            cancellationToken);
 
-            return Ok(authors);
-        }
+        if (result == null)
+            return NotFound();
 
-        // GET: api/authors/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetAuthor(int id)
-        {
-            var author = await _context.Authors
-                .Include(x => x.Books)
-                .FirstOrDefaultAsync(x => x.Id == id);
+        return Ok(result);
+    }
 
-            if (author == null)
-                return NotFound();
+    // POST: api/authors
+    [HttpPost]
+    public async Task<IActionResult> CreateAuthor(
+        [FromBody] AuthorDto dto,
+        CancellationToken cancellationToken)
+    {
+        var result = await _commandHandler.CreateAsync(dto, cancellationToken);
+        return Ok(result);
+    }
 
-            return Ok(author);
-        }
+    // PUT: api/authors/5
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateAuthor(
+        int id,
+        [FromBody] AuthorDto dto,
+        CancellationToken cancellationToken)
+    {
+        var result = await _commandHandler.UpdateAsync(id, dto, cancellationToken);
 
-        // POST: api/authors
-        [HttpPost]
-        public async Task<IActionResult> CreateAuthor(Author author)
-        {
-            _context.Authors.Add(author);
-            await _context.SaveChangesAsync();
+        if (result == null)
+            return NotFound();
 
-            return Ok(author);
-        }
+        return Ok(result);
+    }
 
-        // PUT: api/authors/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAuthor(int id, Author author)
-        {
-            if (id != author.Id)
-                return BadRequest();
+    // DELETE: api/authors/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteAuthor(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        var success = await _commandHandler.DeleteAsync(id, cancellationToken);
 
-            _context.Entry(author).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+        if (!success)
+            return NotFound();
 
-            return Ok(author);
-        }
-
-        // DELETE: api/authors/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAuthor(int id)
-        {
-            var author = await _context.Authors.FindAsync(id);
-
-            if (author == null)
-                return NotFound();
-
-            _context.Authors.Remove(author);
-            await _context.SaveChangesAsync();
-
-            return Ok("Author deleted successfully.");
-        }
+        return NoContent();
     }
 }

@@ -10,10 +10,14 @@ public class UnitOfWork : IUnitOfWork
     public UnitOfWork(ApplicationDbContext context)
     {
         _context = context;
+
         Students = new StudentRepository(_context);
+        Authors = new AuthorRepository(_context);
     }
 
     public IStudentRepository Students { get; }
+
+    public IAuthorRepository Authors { get; }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         => await _context.SaveChangesAsync(cancellationToken);

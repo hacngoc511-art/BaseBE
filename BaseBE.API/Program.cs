@@ -25,6 +25,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<StudentCommandHandler>();
 builder.Services.AddScoped<StudentQueryHandler>();
 builder.Services.AddScoped<StudentFactory>();
+builder.Services.AddScoped<AuthorCommandHandler>();
+builder.Services.AddScoped<AuthorQueryHandler>();
 
 var app = builder.Build();
 
