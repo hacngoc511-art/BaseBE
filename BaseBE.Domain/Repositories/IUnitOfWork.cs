@@ -6,5 +6,9 @@ public interface IUnitOfWork
 
     IAuthorRepository Authors { get; }
 
+    IMemberRepository Members { get; }
+
+    IBorrowingTransactionRepository BorrowingTransactions { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

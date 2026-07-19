@@ -22,11 +22,23 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// Student
 builder.Services.AddScoped<StudentCommandHandler>();
 builder.Services.AddScoped<StudentQueryHandler>();
 builder.Services.AddScoped<StudentFactory>();
+
+// Author
 builder.Services.AddScoped<AuthorCommandHandler>();
 builder.Services.AddScoped<AuthorQueryHandler>();
+
+// Member
+builder.Services.AddScoped<MemberCommandHandler>();
+builder.Services.AddScoped<MemberQueryHandler>();
+
+// Borrowing Transaction
+builder.Services.AddScoped<BorrowingTransactionCommandHandler>();
+builder.Services.AddScoped<BorrowingTransactionQueryHandler>();
 
 var app = builder.Build();
 
